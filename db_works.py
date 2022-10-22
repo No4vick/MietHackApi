@@ -75,12 +75,20 @@ def check_format(answer):
 def check_collisions(answer):
     collection = db[answer['name']]
     content = answer['content']
-    print(content)
+    existing_data = get_first_in_collection("Kek")
+    if existing_data is None:
+        return {"status": 201, "message": "Successfully created answer"}
+    # for i in range(len(content)):
+        # if
+
 
 
 def get_first_in_collection(collection_name, json=False):
     collection = db[collection_name]
-    c = collection.find()[0]
+    try:
+        c = collection.find()[0]
+    except IndexError:
+        return None
     if json:
         c.pop("_id")
     return c
@@ -95,4 +103,6 @@ if __name__ == '__main__':
         jsn = json.loads(f.read())
     # print(check_format(jsn))
     # get_first_in_collection('Dorogi')
-    check_collisions(jsn)
+
+    jsn['content'][1]['field_values'] = ["Кабель", "Бокс", "Болт 20x5"]
+    print(check_collisions(jsn))
