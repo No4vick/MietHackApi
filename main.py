@@ -21,7 +21,7 @@ async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 
 
-@app.post("/saveAnswer", status_code=201)
+@app.post("/save-answer", status_code=201)
 async def add_mail(request: Request, options: Options,
                    response: Response):  # , files: Union[List[UploadFile], None] = None):
     result = await request.json()
@@ -35,3 +35,6 @@ async def add_mail(request: Request, options: Options,
     return {"lol": "kek", "token": request.headers.get('token')}
 
 
+@app.get("/form-names")
+async def send_form_names(request: Request, response: Response):
+    return {"names": db.get_forms()}

@@ -3,11 +3,11 @@ import os
 
 import pymongo
 from pymongo import MongoClient
-from dotenv import load_dotenv
 from bson import BSON
 from bson.json_util import loads, dumps
 
-load_dotenv('.env')
+# from dotenv import load_dotenv
+# load_dotenv('.env')
 client = MongoClient(os.getenv('DB_URL'))
 db = client['autodoor']
 
@@ -32,6 +32,13 @@ def insert_answer(answer):
     print(answer)
     collection.insert_one(answer)
 
+
+def get_forms():
+    collection = db.forms
+    forms = [form['title'] for form in collection.find()]
+    return forms
+
 if __name__ == '__main__':
     # insert_placeholder_form()
-    insert_placeholder_dorogi_answer()
+    # insert_placeholder_dorogi_answer()
+    get_forms()
