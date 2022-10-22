@@ -73,14 +73,28 @@ def check_format(answer):
 
 
 def check_collisions(answer):
-    collection = db[answer['name']]
     content = answer['content']
-    existing_data = get_first_in_collection("Kek")
+    existing_data = get_first_in_collection(answer['name'])
     if existing_data is None:
         return {"status": 201, "message": "Successfully created answer"}
-    # for i in range(len(content)):
-        # if
-
+    existing_data = existing_data['content']
+    collisions = []
+    collision_count = 0
+    for i in range(len(content)):
+        key = 'field_values'
+        try:
+            vals = content[i][key]
+        except KeyError:
+            key = 'field_value'
+            vals = content[i][key]
+        if vals != existing_data[i][key]:
+            collisions.append({'collision_id': collision_count, "form": answer['name'], 'field_id': i + 1,
+                               'field_value': existing_data[i][key], 'new_field_value': vals})
+            collision_count += 1
+    if collision_count == 0:
+        return {"status": 400, "message": "Duplicate"}
+    else:
+        return {"status": 409, "collisions": collisions}
 
 
 def get_first_in_collection(collection_name, json=False):
@@ -104,5 +118,5 @@ if __name__ == '__main__':
     # print(check_format(jsn))
     # get_first_in_collection('Dorogi')
 
-    jsn['content'][1]['field_values'] = ["Кабель", "Бокс", "Болт 20x5"]
+    jsn['content'][4]['field_values'] = ["Кабель", "Бокс", "Болт 20x5"]
     print(check_collisions(jsn))

@@ -22,7 +22,7 @@ async def say_hello(name: str):
 
 
 @app.post("/save-answer", status_code=201)
-async def add_mail(request: Request, options: Options,
+async def save_answer(request: Request, options: Options,
                    response: Response):  # , files: Union[List[UploadFile], None] = None):
     result = await request.json()
     print(result)
@@ -30,9 +30,13 @@ async def add_mail(request: Request, options: Options,
         # response.status_code = status.HTTP_401_UNAUTHORIZED
         # return
         print("no token!")
-    db.insert_answer(result)
-    response.status_code = status.HTTP_201_CREATED
-    return {"lol": "kek", "token": request.headers.get('token')}
+    if not db.check_format(result):
+        return {'status': 400, 'message': "Incorrect format"}
+    collision_result = db.check_collisions(result)
+    if collision_result['status'] == 201:
+        db.insert_answer(result)
+    response.status_code = collision_result['status']
+    return collision_result
 
 
 @app.get("/form/{form}")
