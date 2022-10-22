@@ -108,6 +108,22 @@ def get_first_in_collection(collection_name, json=False):
     return c
 
 
+def save_file(name, filetype, binary):
+    db.files.insert_one({'name': name, 'type': filetype, 'data': binary})
+
+
+def file_exists(filename):
+    file = db.files.find_one({'name': filename})
+    return file is not None
+
+
+def get_file(filename):
+    file = db.files.find_one({'name': filename})
+    if not file:
+        return None
+    return file['data']
+
+
 if __name__ == '__main__':
     # insert_placeholder_form()
     # insert_placeholder_dorogi_answer()

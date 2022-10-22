@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request, Response, status, UploadFile
+from typing import Union, List
+
+from fastapi import FastAPI, Request, Response, UploadFile
 from pydantic import BaseModel
 
 import db_works as db
@@ -23,7 +25,7 @@ async def say_hello(name: str):
 
 @app.post("/save-answer", status_code=201)
 async def save_answer(request: Request, options: Options,
-                   response: Response):  # , files: Union[List[UploadFile], None] = None):
+                      response: Response):  # , files: Union[List[UploadFile], None] = None):
     result = await request.json()
     print(result)
     if request.headers.get('token') != "test":
@@ -52,5 +54,23 @@ async def get_form_data(form: str):
 
 
 @app.get("/form-names")
-async def send_form_names(request: Request, response: Response):
+async def send_form_names():
     return {"names": db.get_forms()}
+
+
+@app.post("/upload")
+async def upload_file(files: Union[List[UploadFile], None] = None):
+    for file in files:
+        filename = file.filename
+        if db.file_exists(filename):
+            continue
+        filetype = file.content_type
+        binary = await file.read()
+        db.save_file(filename, filetype, binary)
+    return {'status': 200, "message": "Success"}
+
+
+@app.get("/download/{filename}")
+async def download_file(filename: str):
+    file = db.get_file(filename)
+    return Response(content=file, media_type="image/png")
