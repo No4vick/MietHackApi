@@ -20,11 +20,17 @@ def insert_placeholder_form():
 
 
 def insert_placeholder_dorogi_answer():
-    collection = db.Dorogi
+    collection = db['Dorogi']
     with open('placeholder_answer.json', 'r', encoding='utf-8') as f:
         placeholder = loads(f.read())
     collection.insert_one(placeholder)
 
+
+def insert_answer(answer):
+    collection = db[answer['name']]
+    answer.pop('name')
+    print(answer)
+    collection.insert_one(answer)
 
 if __name__ == '__main__':
     # insert_placeholder_form()
