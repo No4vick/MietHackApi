@@ -23,7 +23,7 @@ def insert_placeholder_dorogi_answer():
     collection = db['Dorogi']
     with open('placeholder_answer.json', 'r', encoding='utf-8') as f:
         placeholder = loads(f.read())
-    collection.insert_one(placeholder)
+    insert_answer(placeholder)
 
 
 def insert_answer(answer):
@@ -38,7 +38,61 @@ def get_forms():
     forms = [form['title'] for form in collection.find()]
     return forms
 
+
+def get_form(form_title: str, json=False):
+    collection = db.forms
+    form = collection.find_one({'title': form_title})
+    if json:
+        form.pop("_id")
+    return form
+
+
+def form_field_length(form_title: str):
+    form = get_form(form_title)
+    return len(form['fields'])
+
+
+def check_format(answer):
+    content = answer['content']
+    form_title = answer['name']
+    form_fields = get_form(form_title)['fields']
+    if len(content) != form_field_length(form_title):
+        return False
+    for i in range(len(content)):
+        if form_fields[i]['field_type'] != 'text' and form_fields[i]['field_type'] != 'file':
+            for value in content[i]['field_values']:
+                flag = False
+                vals = form_fields[i]['field_values'].values() if type(form_fields[i]['field_values']) is dict \
+                    else form_fields[i]['field_values']
+                for form_field in vals:
+                    if value == form_field:
+                        flag = True
+                if not flag:
+                    return False
+    return True
+
+
+def check_collisions(answer):
+    collection = db[answer['name']]
+    content = answer['content']
+    print(content)
+
+
+def get_first_in_collection(collection_name, json=False):
+    collection = db[collection_name]
+    c = collection.find()[0]
+    if json:
+        c.pop("_id")
+    return c
+
+
 if __name__ == '__main__':
     # insert_placeholder_form()
     # insert_placeholder_dorogi_answer()
-    get_forms()
+    # get_forms()
+    # print(form_field_length('Dorogi'))
+    with open('placeholder_answer.json', 'r', encoding='utf-8') as f:
+        jsn = json.loads(f.read())
+    # print(check_format(jsn))
+    # get_first_in_collection('Dorogi')
+    check_collisions(jsn)

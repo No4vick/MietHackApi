@@ -35,6 +35,18 @@ async def add_mail(request: Request, options: Options,
     return {"lol": "kek", "token": request.headers.get('token')}
 
 
+@app.get("/{form}")
+async def get_form_data(form: str):
+    data = db.get_form(form, True)
+    return {"form": form, "data": data}
+
+
+@app.get("/{form}/data")
+async def get_form_data(form: str):
+    data = db.get_first_in_collection(form, True)
+    return {"form": form, "data": data}
+
+
 @app.get("/form-names")
 async def send_form_names(request: Request, response: Response):
     return {"names": db.get_forms()}
