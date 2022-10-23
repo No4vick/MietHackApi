@@ -26,7 +26,7 @@ class Options(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Hello"}
 
 
 @app.post("/save-answer", status_code=201)
