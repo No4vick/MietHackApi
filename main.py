@@ -42,6 +42,8 @@ async def save_answer(request: Request, options: Options,
     collision_result = db.check_collisions(result, force)
     if collision_result['status'] == 201:
         db.insert_answer(result)
+    else:
+        db.fill_empty(result)
     response.status_code = collision_result['status']
     return collision_result
 

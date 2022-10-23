@@ -88,7 +88,7 @@ def check_collisions(answer, force=False):
         except KeyError:
             key = 'field_value'
             vals = content[i][key]
-        if vals != existing_data[i][key]:
+        if vals != existing_data[i][key] or not existing_data[i][key]:
             collisions.append({'collision_id': collision_count, "form": answer['name'], 'field_id': i + 1,
                                'field_value': existing_data[i][key], 'new_field_value': vals})
             collision_count += 1
@@ -97,6 +97,22 @@ def check_collisions(answer, force=False):
     else:
         return {"status": 409, "collisions": collisions}
 
+
+def fill_empty(answer):
+    content = answer['content']
+    existing_whole = get_main_of_form(answer['name'])
+    existing_data = existing_whole['content']
+    for i in range(len(content)):
+        key = 'field_values'
+        try:
+            vals = content[i][key]
+        except KeyError:
+            key = 'field_value'
+            vals = content[i][key]
+        if not existing_data[i][key]:
+            existing_data[i][key] = vals
+    db.answers.find_one_and_update({"name": existing_whole['name'], 'user': existing_whole['user'],
+                                    'date': existing_whole['date']}, {'$set': {"content": existing_data}})
 
 def get_main_of_form(collection_name, json=False):
     collection = db.answers
