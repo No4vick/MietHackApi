@@ -27,23 +27,19 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-
-
 @app.post("/save-answer", status_code=201)
 async def save_answer(request: Request, options: Options,
                       response: Response):  # , files: Union[List[UploadFile], None] = None):
     result = await request.json()
     print(result)
+    force = request.headers.get('force') is not None
     if request.headers.get('token') != "test":
         # response.status_code = status.HTTP_401_UNAUTHORIZED
         # return
         print("no token!")
     if not db.check_format(result):
         return {'status': 400, 'message': "Incorrect format"}
-    collision_result = db.check_collisions(result)
+    collision_result = db.check_collisions(result, force)
     if collision_result['status'] == 201:
         db.insert_answer(result)
     response.status_code = collision_result['status']
@@ -58,7 +54,13 @@ async def get_form_data(form: str):
 
 @app.get("/form/{form}/data")
 async def get_form_data(form: str):
-    data = db.get_first_in_collection(form, True)
+    data = db.get_main_of_form(form, True)
+    return {"form": form, "data": data}
+
+
+@app.get("/form/{form}/data/{user}")
+async def get_form_data(form: str):
+    data = db.get_main_of_form(form, True)
     return {"form": form, "data": data}
 
 

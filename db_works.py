@@ -27,8 +27,9 @@ def insert_placeholder_dorogi_answer():
 
 
 def insert_answer(answer):
-    collection = db[answer['name']]
-    answer.pop('name')
+    collection = db.answers
+    existing_data = get_main_of_form(answer['name'])
+    answer['main'] = existing_data is None
     print(answer)
     collection.insert_one(answer)
 
@@ -72,10 +73,10 @@ def check_format(answer):
     return True
 
 
-def check_collisions(answer):
+def check_collisions(answer, force=False):
     content = answer['content']
-    existing_data = get_first_in_collection(answer['name'])
-    if existing_data is None:
+    existing_data = get_main_of_form(answer['name'])
+    if existing_data is None or force:
         return {"status": 201, "message": "Successfully created answer"}
     existing_data = existing_data['content']
     collisions = []
@@ -97,10 +98,10 @@ def check_collisions(answer):
         return {"status": 409, "collisions": collisions}
 
 
-def get_first_in_collection(collection_name, json=False):
-    collection = db[collection_name]
+def get_main_of_form(collection_name, json=False):
+    collection = db.answers
     try:
-        c = collection.find()[0]
+        c = collection.find_one({'name': collection_name, 'main': True})
     except IndexError:
         return None
     if json:
