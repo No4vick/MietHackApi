@@ -167,6 +167,11 @@ def save_session(jsn):
         collection.insert_one(jsn)
 
 
+def get_session_content(user_id):
+    object = db.sessions.find_one({"user_id": user_id})
+    return object['content'] if object else None
+
+
 if __name__ == '__main__':
     # insert_placeholder_form()
     # insert_placeholder_dorogi_answer()

@@ -94,8 +94,12 @@ async def download_file(filename: str):
     return Response(content=file, media_type="image/png")
 
 
-@app.get("/save-session")
+@app.post("/save-session")
 async def save_session(req: Request):
     result = await req.json()
     db.save_session(result)
     return {"status": 200, 'message': 'Success'}
+
+@app.get("/get-session/{user_id}")
+async def send_session(user_id: int):
+    return {"status": 200, "content": db.get_session_content(user_id)}
