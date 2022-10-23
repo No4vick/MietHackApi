@@ -44,6 +44,7 @@ async def save_answer(request: Request, options: Options,
         db.insert_answer(result)
     else:
         db.fill_empty(result)
+        db.append_files(result)
     response.status_code = collision_result['status']
     return collision_result
 

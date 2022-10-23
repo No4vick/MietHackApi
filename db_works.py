@@ -114,6 +114,28 @@ def fill_empty(answer):
     db.answers.find_one_and_update({"name": existing_whole['name'], 'user': existing_whole['user'],
                                     'date': existing_whole['date']}, {'$set': {"content": existing_data}})
 
+
+def append_files(answer):
+    content = answer['content']
+    existing_whole = get_main_of_form(answer['name'])
+    existing_data = existing_whole['content']
+    form = get_form(answer['name'])
+    for i in range(len(content)):
+        key = 'field_values'
+        try:
+            vals = content[i][key]
+        except KeyError:
+            key = 'field_value'
+            vals = content[i][key]
+        field_type = form['fields'][i]['field_type']
+        if existing_data[i][key] != vals and (field_type == "checkbox" or field_type == 'file'):
+            for val in vals:
+                if val not in existing_data[i][key]:
+                    existing_data[i][key].append(val)
+    db.answers.find_one_and_update({"name": existing_whole['name'], 'user': existing_whole['user'],
+                                    'date': existing_whole['date']}, {'$set': {"content": existing_data}})
+
+
 def get_main_of_form(collection_name, json=False):
     collection = db.answers
     try:
