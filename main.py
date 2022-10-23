@@ -54,19 +54,19 @@ async def save_answer(request: Request, options: Options,
 
 
 @app.get("/form/{form}")
-async def get_form_data(form: str):
+async def get_form(form: str):
     data = db.get_form(form, True)
     return {"form": form, "data": data}
 
 
 @app.get("/form/{form}/data")
-async def get_form_data(form: str):
+async def get_form_main_data(form: str):
     data = db.get_main_of_form(form, True)
     return {"form": form, "data": data}
 
 
 @app.get("/form/{form}/data/{user}")
-async def get_form_data(form: str):
+async def get_form_data_rom_user(form: str):
     data = db.get_main_of_form(form, True)
     return {"form": form, "data": data}
 
@@ -94,7 +94,7 @@ async def download_file(filename: str):
     return Response(content=file, media_type="image/png")
 
 
-@app.get("/session-save")
+@app.get("/save-session")
 async def save_session(req: Request):
     result = await req.json()
     db.save_session(result)

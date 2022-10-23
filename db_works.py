@@ -1,10 +1,8 @@
 import json
 import os
 
-import pymongo
+from bson.json_util import loads
 from pymongo import MongoClient
-from bson import BSON
-from bson.json_util import loads, dumps
 
 # from dotenv import load_dotenv
 # load_dotenv('.env')
