@@ -29,6 +29,8 @@ async def root():
     return {"message": "Hello"}
 
 
+
+
 @app.post("/save-answer", status_code=201)
 async def save_answer(request: Request, options: Options,
                       response: Response):  # , files: Union[List[UploadFile], None] = None):
@@ -102,7 +104,7 @@ async def save_session(req: Request):
 
 
 @app.post("/save-session/{user_id}")
-async def save_session_by_id(req: Request, user_id: str):
+async def save_session_by_id(req: Request, user_id: int, options: Options):
     result = await req.json()
     db.save_session_by_id(result, user_id)
     return {"status": 200, 'message': 'Success'}
