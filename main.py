@@ -100,6 +100,14 @@ async def save_session(req: Request):
     db.save_session(result)
     return {"status": 200, 'message': 'Success'}
 
+
+@app.post("/save-session/{user_id}")
+async def save_session_by_id(req: Request, user_id: str):
+    result = await req.json()
+    db.save_session_by_id(result, user_id)
+    return {"status": 200, 'message': 'Success'}
+
+
 @app.get("/get-session/{user_id}")
 async def send_session(user_id: int):
     return {"status": 200, "content": db.get_session_content(user_id)}

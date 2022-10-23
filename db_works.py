@@ -28,8 +28,12 @@ def insert_answer(answer):
     collection = db.answers
     existing_data = get_main_of_form(answer['name'])
     answer['main'] = existing_data is None
-    print(answer)
+    remove_session(answer['user'])
     collection.insert_one(answer)
+
+
+def remove_session(user_id):
+    db.sessions.delete_one({'user_id': user_id})
 
 
 def get_forms():
@@ -163,8 +167,14 @@ def get_file(filename):
 
 def save_session(jsn):
     collection = db.sessions
-    if collection.count_documents({"token": jsn['token']}) == 0:
+    if collection.count_documents({"user_id": jsn['user_id']}) == 0:
         collection.insert_one(jsn)
+
+
+def save_session_by_id(jsn, user_id):
+    collection = db.sessions
+    content = jsn['content']
+    collection.find_one_and_update({"user_id": user_id}, {'$set': {'content': content, 'redacting': True}}, upsert=True)
 
 
 def get_session_content(user_id):
