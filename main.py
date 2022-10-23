@@ -83,3 +83,10 @@ async def upload_file(files: Union[List[UploadFile], None] = None):
 async def download_file(filename: str):
     file = db.get_file(filename)
     return Response(content=file, media_type="image/png")
+
+
+@app.get("/session-save")
+async def save_session(req: Request):
+    result = await req.json()
+    db.save_session(result)
+    return {"status": 200, 'message': 'Success'}

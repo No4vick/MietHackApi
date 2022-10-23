@@ -124,6 +124,12 @@ def get_file(filename):
     return file['data']
 
 
+def save_session(jsn):
+    collection = db.sessions
+    if collection.count_documents({"token": jsn['token']}) == 0:
+        collection.insert_one(jsn)
+
+
 if __name__ == '__main__':
     # insert_placeholder_form()
     # insert_placeholder_dorogi_answer()
