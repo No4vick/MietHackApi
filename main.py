@@ -19,6 +19,8 @@ app.add_middleware(
 
 class Options(BaseModel):
     name: str
+    user: str
+    date: str
     content: list
 
 
@@ -33,6 +35,7 @@ async def save_answer(request: Request, options: Options,
     result = await request.json()
     print(result)
     force = request.headers.get('force') is not None
+    append = request.headers.get('append') is not None
     if request.headers.get('token') != "test":
         # response.status_code = status.HTTP_401_UNAUTHORIZED
         # return
@@ -44,7 +47,8 @@ async def save_answer(request: Request, options: Options,
         db.insert_answer(result)
     else:
         db.fill_empty(result)
-        db.append_files(result)
+        if append:
+            db.append_files(result)
     response.status_code = collision_result['status']
     return collision_result
 
